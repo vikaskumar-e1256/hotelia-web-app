@@ -2,8 +2,8 @@ import { Controller, Post, Body, HttpStatus, HttpCode, Get, Request, UseGuards }
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ResponseMessage } from '../shared/decorators/response_message.decorator';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
+import { UserResponseDto } from '../users/dto/user-response.dto';
+import { AuthGuard } from '../shared/guards/auth.guard';
 
 @Controller({ version: '1', path: 'auth' })
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('me')
-  async me(@Request() req): Promise<any> {
-    return req.user;
+  async me(@Request() req): Promise<UserResponseDto> {
+    return new UserResponseDto(req.user);
   }
 }

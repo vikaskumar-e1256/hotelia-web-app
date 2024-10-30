@@ -28,7 +28,7 @@ export class ResponseInterceptor<T>
     return next.handle().pipe(
       map((data) => ({
         statusCode: context.switchToHttp().getResponse().statusCode,
-        message: responseMessage || 'Default message',
+        message: responseMessage || '',
         data,
       })),
     );

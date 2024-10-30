@@ -18,6 +18,10 @@ export class UsersService {
     return this.userRepository.findByUsername(username);
   }
 
+  async findById(id: string): Promise<UserResponseDto | undefined> {
+    return this.userRepository.findById(id);
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if username is already taken
     const existingUsername = await this.userRepository.findOne({
