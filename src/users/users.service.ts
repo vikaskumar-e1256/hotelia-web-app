@@ -1,21 +1,22 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from './user.repository';
 import { UserResponseDto } from './dto/user-response.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 
 @Injectable()
 export class UsersService {
 
   constructor(
-    @InjectRepository(User)
     private readonly userRepository: UserRepository // Injecting the custom repository
-  ) {}
+  ) { }
 
+  async findByUsername(username: string): Promise<UserResponseDto | undefined> {
+    return this.userRepository.findByUsername(username);
+  }
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if username is already taken
@@ -42,11 +43,17 @@ export class UsersService {
     return new UserResponseDto(user);
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
-    return await this.userRepository.findByEmail(email);
-  }
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<string> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
 
-  async findByUsername(username: string): Promise<User | undefined> {
-    return await this.userRepository.findByUsername(username);
+    const passwordMatch = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+    if (!passwordMatch) throw new BadRequestException('Current password is incorrect');
+
+    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    user.password = hashedPassword;
+    await this.userRepository.save(user);
+
+    return 'Password updated successfully';
   }
 }

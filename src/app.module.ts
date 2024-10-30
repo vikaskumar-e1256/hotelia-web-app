@@ -8,6 +8,7 @@ import jwtConfig from './config/jwt.config';
 import { typeOrmConfig } from './config/typeOrm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { ResponseInterceptor } from './shared/interceptors/response.interceptor'
       useFactory: typeOrmConfig,
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [

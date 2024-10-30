@@ -10,10 +10,7 @@ import { UserRepository } from './user.repository';
   controllers: [UsersController],
   providers: [
     UsersService,
-    {
-        provide: UserRepository, // Provide your custom repository
-        useClass: UserRepository, // Use your custom class
-    },
+    UserRepository
   ],
   exports: [UsersService],
 })
