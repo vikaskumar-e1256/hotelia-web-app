@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserRepository } from './user.repository';
 import { UserResponseDto } from './dto/user-response.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { User } from './entities/user.entity';
 
 
 @Injectable()
@@ -14,11 +15,16 @@ export class UsersService {
     private readonly userRepository: UserRepository // Injecting the custom repository
   ) { }
 
+  async getUsers(): Promise<UserResponseDto[] | undefined> {
+    const users = await this.userRepository.find();
+    return users.map(user => new UserResponseDto(user));
+  }
+
   async findByUsername(username: string): Promise<UserResponseDto | undefined> {
     return this.userRepository.findByUsername(username);
   }
 
-  async findById(id: string): Promise<UserResponseDto | undefined> {
+  async findById(id: string): Promise<User | undefined> {
     return this.userRepository.findById(id);
   }
 
@@ -47,7 +53,7 @@ export class UsersService {
     return new UserResponseDto(user);
   }
 
-  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<string> {
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<Boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
@@ -56,8 +62,10 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
     user.password = hashedPassword;
+    // Increment tokenVersion to invalidate old tokens
+    user.tokenVersion += 1;
     await this.userRepository.save(user);
 
-    return 'Password updated successfully';
+    return ;
   }
 }

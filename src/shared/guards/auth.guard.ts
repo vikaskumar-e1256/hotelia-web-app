@@ -44,6 +44,10 @@ export class AuthGuard implements CanActivate {
       );
       const user = await this.usersService.findById(payload.sub); // `sub` should hold userId
       if (!user) throw new UnauthorizedException('User not found');
+      // Validate tokenVersion
+      if (user.tokenVersion !== payload.tokenVersion) {
+        throw new UnauthorizedException('Token is no longer valid');
+      }
 
       request.user = user;
       // request.user = payload;

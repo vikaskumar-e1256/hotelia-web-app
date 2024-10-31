@@ -37,4 +37,7 @@ export class User extends BaseEntity {
     @Column({ type: 'timestamp', nullable: true })
     emailVerifiedAt: Date;
 
+    @Column({ default: 0 })
+    tokenVersion: number;
+
 }
