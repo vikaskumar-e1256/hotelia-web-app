@@ -2,10 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
 
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: true });
+    const env = dotenv.config();
+    dotenvExpand.expand(env);
     app.enableVersioning({
         type: VersioningType.URI,
     });

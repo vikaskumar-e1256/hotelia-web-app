@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Response } from '../interfaces/response.interface';
 
-
 @Injectable()
 export class ResponseInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -26,11 +25,25 @@ export class ResponseInterceptor<T>
     );
 
     return next.handle().pipe(
-      map((data) => ({
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        message: responseMessage || '',
-        data,
-      })),
+      map((result) => {
+        const statusCode = context.switchToHttp().getResponse().statusCode;
+
+        // Check if `meta` and `links` are present in the result
+        if (result && result.meta && result.links) {
+          return {
+            statusCode,
+            message: responseMessage || '',
+            ...result, // Spread `data`, `meta`, and `links` directly
+          };
+        }
+
+        // Default structure with `data` key if `meta` and `links` are not present
+        return {
+          statusCode,
+          message: responseMessage || '',
+          data: result,
+        };
+      }),
     );
   }
 }

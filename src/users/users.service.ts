@@ -15,9 +15,12 @@ export class UsersService {
     private readonly userRepository: UserRepository // Injecting the custom repository
   ) { }
 
-  async getUsers(): Promise<UserResponseDto[] | undefined> {
-    const users = await this.userRepository.find();
-    return users.map(user => new UserResponseDto(user));
+  async findUsers(page: number, limit: number) {
+    const [users, totalUsers] = await this.userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { users, totalUsers };
   }
 
   async findByUsername(username: string): Promise<UserResponseDto | undefined> {

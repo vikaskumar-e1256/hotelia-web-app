@@ -10,6 +10,10 @@ export class UserRepository extends Repository<User> {
     }
 
     // Custom methods here
+    // async getUsers(): Promise<User | undefined> {
+    //     return this.findOne({ where: { email } });
+    // }
+
     async findByEmail(email: string): Promise<User | undefined> {
         return this.findOne({ where: { email } });
     }

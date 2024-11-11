@@ -32,6 +32,9 @@ export class UserResponseDto {
     @Exclude()
     updatedAt: Date;
 
+    @Exclude()
+    tokenVersion: number;
+
     constructor(partial: Partial<UserResponseDto>) {
         Object.assign(this, partial);
     }

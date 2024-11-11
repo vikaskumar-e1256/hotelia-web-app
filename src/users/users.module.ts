@@ -4,13 +4,15 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
+import { PaginationService } from 'src/shared/services/pagination.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])], // Register the User entity
   controllers: [UsersController],
   providers: [
     UsersService,
-    UserRepository
+    UserRepository,
+    PaginationService
   ],
   exports: [UsersService],
 })
